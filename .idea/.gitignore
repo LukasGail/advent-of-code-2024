@@ -1,0 +1,8 @@
+# Default ignored files
+/../../advent-of-code-2024 /.idea/shelf/
+/../../advent-of-code-2024 /.idea/workspace.xml
+# Editor-based HTTP Client requests
+/../../advent-of-code-2024 /.idea/httpRequests/
+# Datasource local storage ignored files
+/../../advent-of-code-2024 /.idea/dataSources/
+/../../advent-of-code-2024 /.idea/dataSources.local.xml
