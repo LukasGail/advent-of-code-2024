@@ -44,7 +44,7 @@ def skip_index(elements, index_to_skip) -> [bool, int]:
 def rule_check(elements, skip_level: bool) -> [bool, int]:
     prev_elem = elements[0]
     # Simple check for increasing or decreasing in first values, if not, check detailed.
-    increasing = True if elements[0] < elements[1] < elements[2] else is_ascending(elements)
+    increasing = is_ascending(elements)
     valid_report = True
     skipped_level = False
     first_skipped_index = -1
@@ -69,7 +69,7 @@ def rule_check(elements, skip_level: bool) -> [bool, int]:
 def is_ascending(elements):
     ascending = 0
     descending = 0
-    for i in range(1, len(elements)):
+    for i in range(1, 4):
         if elements[i] > elements[i-1]:
             ascending += 1
         else:
