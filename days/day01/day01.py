@@ -14,15 +14,17 @@ def get_sorted_lists() -> list[list[int]]:
     r.sort()
     return [l,r]
 
-def part1():
-    l, r = get_sorted_lists()
+def part1(sorted_lists: list[list[int]]) -> int:
+    l, r = sorted_lists
     result = 0
     for i in range(len(l)):
         result = result + abs(l[i] - r[i])
-    print(result)
 
-def part2():
-    l, r = get_sorted_lists()
+    return result
+
+
+def part2(sorted_lists: list[list[int]]) -> int:
+    l, r = sorted_lists
 
     multiplication_list = []
     l_last_elem = None # to prevent duplicate calculations
@@ -45,11 +47,11 @@ def part2():
                 multiplication_list.append(l[i] * r_same_count)
                 l_last_elem = l[i]
 
-    result = sum(multiplication_list)
-    print(result)
+    return sum(multiplication_list)
 
 
 if __name__ == '__main__':
-    part1()
-    part2()
+    sorted_lists_input = get_sorted_lists()
+    print(part1(sorted_lists_input))
+    print(part2(sorted_lists_input))
 
