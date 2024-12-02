@@ -2,7 +2,6 @@ from utils.utils import load_data
 
 def level_tolerance_result(input_data, skip_level_tolerance: int = 0):
     save_reports_count = 0
-    counter = 0
     for line in input_data.split('\n'):
         if line:
             elements = [int(elem) for elem in line.split()]
@@ -11,28 +10,23 @@ def level_tolerance_result(input_data, skip_level_tolerance: int = 0):
                 save_reports_count += 1
 
             elif skip_level_tolerance > 0:
-                # Problem with first setting if list is ascending or descending, 54 56 54 52 51 49 problem,
-                # because first could be deleted, and then it would be valid... maby later.
-                # if skip_index(elements, rule_check_result[1] + 1) or skip_index(elements, rule_check_result[1] - 1):
-                #     save_reports_count += 1
-
-                # bruteforce if simple approach fails
-                if brute_force(elements):
+                if skip_index(elements, rule_check_result[1] - 1):
                     save_reports_count += 1
 
-
-        counter += 1
+                # bruteforce (works too)
+                # if brute_force(elements):
+                #     save_reports_count += 1
 
     return save_reports_count
 
-def brute_force(elements) -> bool:
-    for i in range(len(elements)):
-        elements_copy = elements.copy()
-        elements_copy.pop(i)
-        rule_check_result = rule_check(elements_copy, 0)
-        if rule_check_result[0]:
-            return True
-    return False
+# def brute_force(elements) -> bool:
+#     for i in range(len(elements)):
+#         elements_copy = elements.copy()
+#         elements_copy.pop(i)
+#         rule_check_result = rule_check(elements_copy, 0)
+#         if rule_check_result[0]:
+#             return True
+#     return False
 
 def skip_index(elements, index_to_skip) -> [bool, int]:
     if not -1 < index_to_skip < len(elements)-1:
@@ -46,7 +40,8 @@ def skip_index(elements, index_to_skip) -> [bool, int]:
 
 def rule_check(elements, skip_level_tolerance) -> [bool, int]:
     prev_elem = elements[0]
-    increasing = elements[0] < elements[1]
+    # Simple check for increasing or decreasing in first values, if not, check detailed.
+    increasing = True if elements[0] < elements[1] < elements[2] else is_ascending(elements)
     valid_report = True
     skipped_levels = 0
     first_skipped_index = -1
@@ -68,14 +63,18 @@ def rule_check(elements, skip_level_tolerance) -> [bool, int]:
 
     return [valid_report, first_skipped_index]
 
-
+def is_ascending(elements):
+    ascending = 0
+    descending = 0
+    for i in range(1, len(elements)):
+        if elements[i] > elements[i-1]:
+            ascending += 1
+        else:
+            descending += 1
+    return ascending > descending
 
 if __name__ == '__main__':
     input_day02 = load_data('day02.txt')
     print(level_tolerance_result(input_day02, 0))
     print(level_tolerance_result(input_day02, 1))
-
-
-
-
 
