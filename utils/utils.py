@@ -65,3 +65,24 @@ def en_decrypt_file_types(folder_path, key_path, encrypt: bool = True, override_
                 print(f"Skipped file {file_name}. {e}")
 
 
+
+class ListNode:
+    def __init__(self, value=None):
+        self.value = value
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.length = 0
+        self.head = None
+        self.tail = None
+
+    def append(self, value):
+        new_node = ListNode(value)
+        if self.length > 0:
+            self.tail.next = new_node
+            self.tail = new_node
+        else:
+            self.head = new_node
+            self.tail = new_node
+        self.length += 1
