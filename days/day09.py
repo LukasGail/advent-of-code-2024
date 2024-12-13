@@ -52,8 +52,12 @@ def get_size_of_block_type(input_list: list[int|None], index: int, backwards_sea
     starting_index = index
     while True:
         next_index: int = (index - 1) if backwards_search else (index + 1)
-        if (not (0 <= next_index < len(input_list))) or not isinstance(input_list[next_index], type(input_list[starting_index])):
+        if ((not (0 <= next_index < len(input_list))) or
+                (not isinstance(input_list[next_index], type(input_list[starting_index])))):
             break
+        if input_list[next_index] is not None and input_list[next_index] is not None:
+            if input_list[next_index] != input_list[starting_index]:
+                break
         result_size = result_size + 1
         index = next_index
 
@@ -62,26 +66,43 @@ def get_size_of_block_type(input_list: list[int|None], index: int, backwards_sea
 
 def compact_whole_files_on_disc(input_list: list[int|None]) -> list[int|None]:
     input_list = input_list.copy()
-    r_pointer = find_next_element_type_index(input_list, len(input_list), int, True)
-    r_pointer_size = get_size_of_block_type(input_list, r_pointer, True)
-    l_pointer = find_next_element_type_index(input_list, -1, NoneType)
-    l_pointer_size = get_size_of_block_type(input_list, l_pointer)
 
+    free_spaces: list[tuple[int, int]] = []
+    file_sets: list[tuple[int, int]] = []
 
-    while r_pointer:
-        while r_pointer and l_pointer and l_pointer < r_pointer:
-            if l_pointer_size <= r_pointer_size:
-                # swap
-                for i in range(r_pointer_size):
-                    input_list[l_pointer+i] = input_list[r_pointer-i]
-                    input_list[r_pointer-i] = None
+    for i in range(2):
+        l_pointer = find_next_element_type_index(input_list, -1, NoneType if i == 0 else int)
+        while l_pointer is not None:
+            l_pointer_size = get_size_of_block_type(input_list, l_pointer)
+            free_spaces.append((l_pointer, l_pointer_size)) if i == 0 else file_sets.append((l_pointer, l_pointer_size))
+            l_pointer = find_next_element_type_index(input_list, l_pointer+l_pointer_size -1, NoneType if i == 0 else int)
+
+    for file in range(len(file_sets)):
+        file_reversed_index = len(file_sets) - file - 1
+        for space in range(len(free_spaces)):
+            if free_spaces[space][1] >= file_sets[file_reversed_index][1]:
+                for i in range(file_sets[file_reversed_index][1]):
+                    input_list[free_spaces[space][0]+i], input_list[file_sets[file_reversed_index][0]+i] = input_list[file_sets[file_reversed_index][0]+i], input_list[free_spaces[space][0]+i]
+                free_spaces[space] = (free_spaces[space][0] + file_sets[file_reversed_index][1], free_spaces[space][1] - file_sets[file_reversed_index][1])
                 break
-            else: # search next left pointer..
-                l_pointer = find_next_element_type_index(input_list, l_pointer+l_pointer_size -1, NoneType)
-                l_pointer_size = get_size_of_block_type(input_list, l_pointer)
 
-        # next r_pointer
-        r_pointer = find_next_element_type_index(input_list, r_pointer - r_pointer_size +1, int, True)
+
+
+
+    # while r_pointer:
+    #     while r_pointer and l_pointer and l_pointer < r_pointer:
+    #         if l_pointer_size <= r_pointer_size:
+    #             # swap
+    #             for i in range(r_pointer_size):
+    #                 input_list[l_pointer+i] = input_list[r_pointer-i]
+    #                 input_list[r_pointer-i] = None
+    #             break
+    #         else: # search next left pointer..
+    #             l_pointer = find_next_element_type_index(input_list, l_pointer+l_pointer_size -1, NoneType)
+    #             l_pointer_size = get_size_of_block_type(input_list, l_pointer)
+    #
+    #     # next r_pointer
+    #     r_pointer = find_next_element_type_index(input_list, r_pointer - r_pointer_size +1, int, True)
     return input_list
 
 def get_sum_of_file_ids_times_file_pos(compact_input_list) -> int:
@@ -99,17 +120,15 @@ def get_sum_of_file_ids_times_file_pos(compact_input_list) -> int:
 
 
 if __name__ == '__main__':
-    input_day09 = load_data('day09test.txt')
+    input_day09 = load_data('day09.txt')
     input_list_day09 = get_list_from_input_data(input_day09)
     converted_input_list = convert_in_space_representation(input_list_day09)
-    print(converted_input_list)
-    print(get_size_of_block_type(converted_input_list, len(converted_input_list) +2))
 
-    # compacted_files = compact_files_on_disc(converted_input_list)
-    # # print(compacted_files)
-    # print(get_sum_of_file_ids_times_file_pos(compacted_files))
-    # compacted_whole_files = compact_whole_files_on_disc(converted_input_list)
-    # # print(compacted_whole_files)
-    # print(get_sum_of_file_ids_times_file_pos(compacted_whole_files))
+    compacted_files = compact_files_on_disc(converted_input_list)
+    print(get_sum_of_file_ids_times_file_pos(compacted_files))
+
+    compacted_whole_files = compact_whole_files_on_disc(converted_input_list)
+    print(get_sum_of_file_ids_times_file_pos(compacted_whole_files))
 
 
+#8553014718259 too high
