@@ -80,29 +80,22 @@ def compact_whole_files_on_disc(input_list: list[int|None]) -> list[int|None]:
     for file in range(len(file_sets)):
         file_reversed_index = len(file_sets) - file - 1
         for space in range(len(free_spaces)):
+            # Check that free space index is not behind actual current file position.
+            if free_spaces[space][0] > file_sets[file_reversed_index][0]:
+                break
             if free_spaces[space][1] >= file_sets[file_reversed_index][1]:
+
                 for i in range(file_sets[file_reversed_index][1]):
                     input_list[free_spaces[space][0]+i], input_list[file_sets[file_reversed_index][0]+i] = input_list[file_sets[file_reversed_index][0]+i], input_list[free_spaces[space][0]+i]
-                free_spaces[space] = (free_spaces[space][0] + file_sets[file_reversed_index][1], free_spaces[space][1] - file_sets[file_reversed_index][1])
+
+                if free_spaces[space][1] - file_sets[file_reversed_index][1] <= 0:
+                    free_spaces.pop(space)
+                else:
+                    free_spaces[space] = (free_spaces[space][0] + file_sets[file_reversed_index][1], free_spaces[space][1] - file_sets[file_reversed_index][1])
                 break
 
 
 
-
-    # while r_pointer:
-    #     while r_pointer and l_pointer and l_pointer < r_pointer:
-    #         if l_pointer_size <= r_pointer_size:
-    #             # swap
-    #             for i in range(r_pointer_size):
-    #                 input_list[l_pointer+i] = input_list[r_pointer-i]
-    #                 input_list[r_pointer-i] = None
-    #             break
-    #         else: # search next left pointer..
-    #             l_pointer = find_next_element_type_index(input_list, l_pointer+l_pointer_size -1, NoneType)
-    #             l_pointer_size = get_size_of_block_type(input_list, l_pointer)
-    #
-    #     # next r_pointer
-    #     r_pointer = find_next_element_type_index(input_list, r_pointer - r_pointer_size +1, int, True)
     return input_list
 
 def get_sum_of_file_ids_times_file_pos(compact_input_list) -> int:
@@ -123,12 +116,7 @@ if __name__ == '__main__':
     input_day09 = load_data('day09.txt')
     input_list_day09 = get_list_from_input_data(input_day09)
     converted_input_list = convert_in_space_representation(input_list_day09)
-
     compacted_files = compact_files_on_disc(converted_input_list)
     print(get_sum_of_file_ids_times_file_pos(compacted_files))
-
     compacted_whole_files = compact_whole_files_on_disc(converted_input_list)
     print(get_sum_of_file_ids_times_file_pos(compacted_whole_files))
-
-
-#8553014718259 too high
